@@ -1,0 +1,66 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: phani-cluster
+  region: eu-central-1
+  tags: {environment: beta}
+nodeGroups:
+  - name: phani-cluster-ng-1
+    labels:
+      nodegroup-type: backend-workloads
+      server: dev
+    instanceType: t2.medium
+    minSize: 1
+    maxSize: 2
+    desiredCapacity: 1
+  #  availabilityZones: ["us-east-1a", "us-east-1b"]
+    preBootstrapCommands:
+        # Replicate what --enable-docker-bridge does in /etc/eks/bootstrap.sh
+        # Enabling the docker bridge network. We have to disable live-restore as it
+        # prevents docker from recreating the default bridge network on restart
+       - "cp /etc/docker/daemon.json /etc/docker/daemon_backup.json"
+       - "echo -e '.bridge=\"docker0\" | .\"live-restore\"=false' >  /etc/docker/jq_script"
+       - "jq -f /etc/docker/jq_script /etc/docker/daemon_backup.json | tee /etc/docker/daemon.json"
+       - "systemctl restart docker"
+    ami: auto
+    volumeSize: 10
+    ssh: # use existing EC2 key
+      publicKeyName: phani-test
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        appMesh: true
+        ebs: true
+  - name: phani-cluster-ng-2
+    labels:
+      nodegroup-type: frond-workloads
+      server: prod
+    instanceType: t2.medium
+    minSize: 1
+    maxSize: 2
+    desiredCapacity: 1
+  #  availabilityZones: ["us-east-1a", "us-east-1b"]
+    preBootstrapCommands:
+        # Replicate what --enable-docker-bridge does in /etc/eks/bootstrap.sh
+        # Enabling the docker bridge network. We have to disable live-restore as it
+        # prevents docker from recreating the default bridge network on restart
+       - "cp /etc/docker/daemon.json /etc/docker/daemon_backup.json"
+       - "echo -e '.bridge=\"docker0\" | .\"live-restore\"=false' >  /etc/docker/jq_script"
+       - "jq -f /etc/docker/jq_script /etc/docker/daemon_backup.json | tee /etc/docker/daemon.json"
+       - "systemctl restart docker"
+    ami: auto
+    volumeSize: 10
+    ssh: # use existing EC2 key
+      publicKeyName: phani-test
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        autoScaler: true
+        externalDNS: true
+        certManager: true
+        appMesh: true
+        ebs: true
