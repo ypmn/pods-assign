@@ -35,6 +35,11 @@ nodeGroups:
         certManager: true
         appMesh: true
         ebs: true
+        fsx: true
+        efs: true
+        albIngress: true
+        xRay: true
+        cloudWatch: true
   - name: phani-cluster-ng-2
     labels:
       nodegroup-type: frond-workloads
@@ -64,3 +69,8 @@ nodeGroups:
         certManager: true
         appMesh: true
         ebs: true
+        fsx: true
+        efs: true
+        albIngress: true
+        xRay: true
+        cloudWatch: true
