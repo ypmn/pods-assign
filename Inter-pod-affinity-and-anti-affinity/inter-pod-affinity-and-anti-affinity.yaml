@@ -22,7 +22,7 @@ spec:
             - key: env
               operator: In
               values:
-              - test
+              - dev
           topologyKey: server
   containers:
   - name: with-pod-affinity
